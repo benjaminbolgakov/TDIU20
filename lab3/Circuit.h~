@@ -1,0 +1,85 @@
+#include <stdexcept>
+#include <iostream>
+#include <initializer_list>
+class Circuit{
+public:
+    // ========Circuit========== //
+    //Constructors
+    Circuit();
+    //Deconstructors
+    ~Circuit();
+    void simulate();
+    void addConnection();
+    void addComponent();
+
+    // =======|Circuit|========= //
+
+    // =======Component========= //
+public: class Component{
+public:
+    //Constructors
+    Component();
+    //Functions
+    double getVoltage();
+    double getResistance();
+    double getCapacitence();
+    std::string getId();
+private:
+    double voltage;
+    double resistance;
+    double capacitance;
+    std::string id;
+    Connection* con;
+};
+    // ======|Component|======== //
+
+
+
+// =======Resistor========= //
+public: class Resistor : public Component{
+public:
+    double getResistance();
+private:
+};
+// ======|Resistor|======== //
+
+
+
+    // ========Battery========= //
+public: class Battery : public Component{
+public:
+    double getVoltage();
+private:
+};
+    // =======|Battery|======== //
+
+
+    // =======Capacitor======== //
+public: class Capacitor : public Component{
+public:
+    double getCapacitance();
+private:
+};
+    // ======|Capacitor|======= //
+
+
+    // =======Connection======== //
+public: class Connection{
+public:
+
+private:
+};
+    // ======|Connection|======= //
+
+
+
+    // ========Circuit========== //
+private:
+
+};
+
+Circuit c;
+c.addCon(new Connection(name));
+c.addComp(new Battery(a,c));
+c.addComp(new Resistor(a,c));
+c.addCon(new Connection(name));

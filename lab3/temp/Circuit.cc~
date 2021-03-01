@@ -1,0 +1,122 @@
+#include "Circuit.h"
+
+// =======Connection======== //
+//Constructor
+Connection::Connection() : charge{0}
+{
+
+}
+Connection::~Connection()
+{
+
+}
+//Functions
+Connection& Connection::operator=(double voltage)
+{
+    charge = voltage;
+    return *this;
+}
+Connection::operator double()
+{
+    return this->charge;
+}
+
+// =======Component========= //
+//Constructors
+Component::Component(std::string name,Connection& l, Connection& r) : id{name}, left{l}, right{r}
+{
+
+}
+Component::~Component()
+{
+
+}
+//Functions
+double Component::getVoltage() const
+{
+    if (double(left) < double(right))
+    {
+        return (right-left);
+    }
+    else
+    {
+        return (left-right);
+    }
+}
+std::string Component::getId() const
+{
+    return id;
+}
+
+
+// ========Battery========= //
+//Constructors
+Battery::Battery(std::string name, double voltage, Connection& l, Connection& r) : Component{name,l,r}, voltage{voltage}
+{
+    l = voltage;
+}
+//Functions
+void Battery::update(double time)
+{
+    left = voltage;
+    right = 0;
+}
+double Battery::get_current()
+{
+    return 0;
+}
+double Battery::getVoltage() const
+{
+    return voltage;
+}
+
+
+// ========Resistor========= //
+//Constructor
+Resistor::Resistor(std::string name, double resistance, Connection& l, Connection& r) : Component{name,l,r},
+                                                                               resistance{resistance}
+{
+
+}
+//Functions
+void Resistor::update(double time)
+{
+    if (double(left) <  double(right))
+    {
+        right = double(right)+(((double(right)-double(left))/resistance)*time);
+        left = double(left)-(((double(right)-double(left))/resistance)*time);
+    }
+    else
+    {
+        right = double(right)-(((double(right)-double(left))/resistance)*time);
+        left = double(left)+(((double(right)-double(left))/resistance)*time);
+    }
+}
+double Resistor::get_current()
+{
+    if (double(left) < double(right))
+    {
+        return (right-left)/resistance;
+    }
+    else
+    {
+        return (left-right)/resistance;
+    }
+}
+
+// ========Capacitor========= //
+//Constructors
+Capacitor::Capacitor(std::string name, double capacitance, Connection& l, Connection& r) :
+    Component{name,l,r}, capacitance{capacitance}, charge{0}
+{
+
+}
+//Functions
+void Capacitor::update(double time)
+{
+
+}
+double Capacitor::get_current()
+{
+
+}

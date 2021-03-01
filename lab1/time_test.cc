@@ -23,7 +23,7 @@ TEST_CASE ("Default constructor")
     CHECK(t.minute() == 0);
     CHECK(t.second() == 0);
 }
- 
+
 // the following line will halt the compilation process. Move it
 // one test case at the time and then start creating your own test
 // cases
@@ -34,6 +34,26 @@ TEST_CASE ( "Constructor with numeric arguments" )
     CHECK(t.hour() == 12);
     CHECK(t.minute() == 13);
     CHECK(t.second() == 14);
+}
+
+TEST_CASE ("Constructor with faulty argument")
+{
+    CHECK_THROWS( Time{41,0,0} );
+    CHECK_THROWS( Time{0,99,0} );
+    CHECK_THROWS( Time{0,0,99} );
+}
+
+TEST_CASE ("String constructor")
+{
+    Time t{"12:23:12"};
+    CHECK(t.hour() == 12);
+    CHECK(t.minute() == 23);
+    CHECK(t.second() == 12);
+
+    SECTION ("Throws as well")
+    {
+        CHECK_THROWS( Time{"02:11:74"} );
+    }
 }
 
 TEST_CASE ("am or pm")
@@ -50,7 +70,7 @@ TEST_CASE ("Convert to string" )
     CHECK( Time{12, 1, 2}.to_string()     ==    "12:01:02" );
     CHECK( Time{14,33,12}.to_string(true) == "02:33:12 pm" );
 }
-#if 0
+
 TEST_CASE ("Conversion to string" )
 {
     CHECK( string(Time{2,4,1}) == "02:04:01" );
@@ -76,5 +96,52 @@ TEST_CASE ("Output operator" )
         CHECK(ss.str() == "23:23:23");
     }
 }
+
+TEST_CASE ("Input operator" )
+{
+    SECTION("Simple output")
+    {
+        istringstream iss{"02:02:0a"};
+        Time t{};
+        iss >> t;
+        CHECK(iss.fail());
+        CHECK(t.to_string() == "00:00:00");
+    }
+}
+
+
+TEST_CASE ("Add integer N in seconds pos/neg")
+{
+    Time t{10,10,10};
+    //t+(-86401);
+    t-(82401);
+    CHECK(t.to_string() == "11:16:49");
+}
+
+
+
+TEST_CASE ("Decrement by one")
+{
+    Time t{10,0,0};
+    --t;
+    CHECK(t.to_string() == "09:59:59");
+}
+TEST_CASE ("Compare")
+{
+    Time t1{13,12,12};
+    Time t2{14,12,12};
+    //CHECK(t1>t2);
+    CHECK(t1!=t2);
+    //CHECK(t1>t1);
+}
+/*
+TEST_CASE ("Sub integer N in seconds pos/neg")
+{
+    Time t{10,10,10};
+    t-(11);
+    CHECK(t.to_string() == "10:09:59");
+    }*/
+
+#if 0
 #endif
 
