@@ -121,15 +121,11 @@ void Capacitor::update(double time)
 {
     if (double(left) < double(right))
     {
-        //double stored_charge += double(right);
-        //left = double(left)+stored_charge;
         double diff = (double(right)-double(left)); //Difference in potential
         double add_charge = (capacitance*(diff-charge))*time; //Charge to add to "storage" and LCC
         charge += add_charge; //Store additional charge
         left = double(left)+add_charge;
         right = double(right)-add_charge;
-        //left += add_charge;
-        //right -= add_charge;
     }
     else
     {
@@ -138,8 +134,6 @@ void Capacitor::update(double time)
         charge += add_charge; //Store additional charge
         left = double(left)-add_charge;
         right = double(right)+add_charge;
-        //left -= add_charge;
-        //right += add_charge;
     }
 }
 double Capacitor::getCurrent()

@@ -2,6 +2,9 @@
 #include <iostream>
 #include <initializer_list>
 #include <iomanip>
+
+
+
 class Connection{
 public:
     //Constructor
@@ -60,7 +63,6 @@ public:
 protected:
     double resistance;
 };
-
 
 
 // ========Capacitor========= //
