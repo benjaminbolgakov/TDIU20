@@ -6,11 +6,7 @@
 
 using namespace std;
 
-void printHeader(vector<Component*> net);
-void simulate(vector<Component*> net, int iterations, int nmbPrints, double time);
 void data_control(int argc, char* argv[]);
-void mem_clean(vector<Component*> net);
-
 int main(int argc, char* argv[])
 {
     //Args:
@@ -21,49 +17,49 @@ int main(int argc, char* argv[])
     double in_prints = atof(argv[2]);
     double in_interval = atof(argv[3]);
     double in_bat_voltage = atof(argv[4]);
-    cout << in_iterations << " " << in_prints << " " << in_interval << " " << in_bat_voltage << endl;
 
-    /*Connection p, n, q1, q2;
-    vector<Component*> net;
-    net.push_back(new Battery("Bat", 24.0,p,n));
-    net.push_back(new Resistor("R1", 6.0,p,q1));
-    net.push_back(new Resistor("R2", 4.0,q1,q2));
-    net.push_back(new Resistor("R3", 8.0,q2,n));
-    net.push_back(new Resistor("R4", 12.0,q1,n));
-    simulate(net, 200000, 10, 0.01);
+    Circuit c1;
+    c1.addConnection("p");
+    c1.addConnection("n");
+    c1.addConnection("q1");
+    c1.addConnection("q2");
+    c1.addComponent(new Battery("Bat", in_bat_voltage, c1.getCon("p"), c1.getCon("n")));
+    c1.addComponent(new Resistor("R1", 6.0, c1.getCon("p"),c1.getCon("q1")));
+    c1.addComponent(new Resistor("R2", 4.0, c1.getCon("q1"),c1.getCon("q2")));
+    c1.addComponent(new Resistor("R3", 8.0, c1.getCon("q2"),c1.getCon("n")));
+    c1.addComponent(new Resistor("R4", 12.0, c1.getCon("q1"), c1.getCon("n")));
+    c1.simulate(in_iterations,in_prints,in_interval);
+
+    Circuit c2;
+    c2.addConnection("p");
+    c2.addConnection("n");
+    c2.addConnection("r");
+    c2.addConnection("l");
+    c2.addComponent(new Battery("Bat", in_bat_voltage, c2.getCon("p"), c2.getCon("n")));
+    c2.addComponent(new Resistor("R1", 150.0, c2.getCon("p"),c2.getCon("l")));
+    c2.addComponent(new Resistor("R2", 50.0, c2.getCon("p"),c2.getCon("r")));
+    c2.addComponent(new Resistor("R3", 100.0, c2.getCon("r"),c2.getCon("l")));
+    c2.addComponent(new Resistor("R4", 300.0, c2.getCon("l"), c2.getCon("n")));
+    c2.addComponent(new Resistor("R5", 250.0, c2.getCon("r"), c2.getCon("n")));
+    c2.simulate(in_iterations,in_prints,in_interval);
+
+    Circuit c3;
+    c3.addConnection("p");
+    c3.addConnection("n");
+    c3.addConnection("l");
+    c3.addConnection("r");
+    c3.addComponent(new Battery("Bat", in_bat_voltage, c3.getCon("p"),c3.getCon("n")));
+    c3.addComponent(new Resistor("R1", 150.0, c3.getCon("p"),c3.getCon("l")));
+    c3.addComponent(new Resistor("R2", 50.0, c3.getCon("p"),c3.getCon("r")));
+    c3.addComponent(new Capacitor("C3", 1.0, c3.getCon("l"), c3.getCon("r")));
+    c3.addComponent(new Resistor("R4", 300.0, c3.getCon("l"), c3.getCon("n")));
+    c3.addComponent(new Capacitor("C5", 0.75, c3.getCon("r"), c3.getCon("n")));
+    c3.simulate(in_iterations,in_prints,in_interval);
 
 
-    Connection p, l, r, n;
-    vector<Component*> net;
-    net.push_back(new Battery("Bat", 24.0, p,n));
-    net.push_back(new Resistor("R1", 150.0, p,l));
-    net.push_back(new Resistor("R2", 50.0, p,r));
-    net.push_back(new Resistor("R3", 100.0, r,l));
-    net.push_back(new Resistor("R4", 300.0, l,n));
-    net.push_back(new Resistor("R5", 250.0, r,n));
-    simulate(net, 200000, 10, 0.01);*/
 
-    Connection p, l, r, n;
-    vector<Component*> net;
-    net.push_back(new Battery("Bat", 24.0, p,n));
-    net.push_back(new Resistor("R1", 150.0, p,l));
-    net.push_back(new Resistor("R2", 50.0, p,r));
-    net.push_back(new Capacitor("C3", 1.0, l,r));
-    net.push_back(new Resistor("R4", 300.0, l,n));
-    net.push_back(new Capacitor("C5", 0.75, r,n));
-    simulate(net, 200000, 10, 0.01);
-
-    mem_clean(net);
 
     return 0;
-}
-
-void mem_clean(vector<Component*> net)
-{
-    for (Component* c : net)
-    {
-        delete c;
-    }
 }
 
 void data_control(int argc, char* argv[])
@@ -85,39 +81,5 @@ void data_control(int argc, char* argv[])
     {
         cout << e.what() << endl;
         throw std::invalid_argument("Invalid argument");
-    }
-}
-
-void printHeader(vector<Component*> net)
-{
-    for (Component* c : net)
-    {
-        std::cout << c->getId() << "\t \t";
-    }
-    std::cout << std::endl;
-    for (Component* c : net)
-    {
-        std::cout << "Volt  Curr\t";
-    }
-    std::cout << std::endl;
-}
-void simulate(vector<Component*> net, int iterations, int nmbPrints, double time)
-{
-    printHeader(net);
-    for (int i{0}; i < nmbPrints; i++)
-    {
-        for (int j{0}; j < (iterations/nmbPrints); j++)
-        {
-            for (Component* c : net)
-            {
-                c->update(time);
-            }
-        }
-        for (Component* c : net)
-        {
-            std::cout << setprecision(2) << fixed << setw(2)
-                      << c->getVoltage() << "  " << c->getCurrent() << "\t";
-        }
-        std::cout << std::endl;
     }
 }

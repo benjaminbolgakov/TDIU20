@@ -1,8 +1,98 @@
 #include "Circuit.h"
 
+// =======Circuit======== //
+//Constructors
+Circuit::Circuit() : connections{}, components{}
+{
+
+}
+
+//Destructors
+Circuit::~Circuit()
+{
+    for (Component* comp : components)
+    {
+        delete comp;
+    }
+    for (Connection* con : connections)
+    {
+        delete con;
+    }
+}
+//Functions
+void Circuit::simulate(double iterations, double nmbPrints, double time)
+{
+    this->printHeader();
+    for (int i{0}; i < nmbPrints; i++)
+    {
+        for (int j{0}; j < (iterations/nmbPrints); j++)
+        {
+            for (Component* c : components)
+            {
+                c->update(time);
+            }
+        }
+        for (Component* c : components)
+        {
+            std::cout << std::setprecision(2) << std::fixed << std::setw(2)
+                      << c->getVoltage() << "  " << c->getCurrent() << "\t";
+        }
+        std::cout << std::endl;
+    }
+    std::cout << std::endl;
+}
+void Circuit::printHeader()
+{
+    int index{0};
+    for (Component* c : components)
+    {
+        std::cout << c->getId() << "\t \t";
+        index++;
+    }
+    std::cout << std::endl;
+    for (int i{0}; i < index; i++)
+    {
+        std::cout << "Volt  Curr\t";
+    }
+    std::cout << std::endl;
+}
+void Circuit::addComponent(Component* comp)
+{
+    for (Component* c : this->components)
+    {
+        if (c->getId() == comp->getId())
+    {
+        throw std::logic_error("Component with that name already exists");
+    }
+    }
+    this->components.push_back(comp);
+}
+void Circuit::addConnection(std::string id)
+{
+    for (Connection* c : this->connections)
+    {
+        if ( c->getId() == id)
+        {
+            throw std::logic_error("Connection point with that name already exists");
+        }
+    }
+    this->connections.push_back(new Connection(id));
+}
+Connection& Circuit::getCon(std::string id)
+{
+    for (Connection* c : this->connections)
+    {
+        if ( c->getId() == id)
+        {
+            return *c;
+        }
+    }
+    throw std::logic_error("Connection doesn't exists");
+}
+
 // =======Connection======== //
 //Constructor
-Connection::Connection() : charge{0}
+Connection::Connection(std::string id) : charge{0}, id{id}
 {
 
 }
@@ -19,6 +109,11 @@ Connection& Connection::operator=(double voltage)
 Connection::operator double()
 {
     return this->charge;
+}
+
+std::string Connection::getId() const
+{
+    return id;
 }
 
 // =======Component========= //
@@ -61,7 +156,7 @@ void Battery::update(double time)
     left = voltage;
     right = 0;
 }
-double Battery::getCurrent()
+double Battery::getCurrent() const
 {
     return 0;
 }
@@ -96,7 +191,7 @@ void Resistor::update(double time)
         left = double(left)-move;
     }
 }
-double Resistor::getCurrent()
+double Resistor::getCurrent() const
 {
     //Returns the current through a resistor
     if (double(left) < double(right))
@@ -136,7 +231,7 @@ void Capacitor::update(double time)
         right = double(right)+add_charge;
     }
 }
-double Capacitor::getCurrent()
+double Capacitor::getCurrent() const
 {
     if (double(left) < double(right))
     {

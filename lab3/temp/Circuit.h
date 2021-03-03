@@ -2,33 +2,36 @@
 #include <iostream>
 #include <initializer_list>
 #include <iomanip>
-
+#include <vector>
 
 
 class Connection{
 public:
     //Constructor
-    Connection();
+    Connection(std::string id);
     //Destructor
     ~Connection();
     //Functions
     Connection& operator=(double voltage);
     operator double();
+    std::string getId() const;
 
 private:
     double charge;
+    std::string id;
+
 };
 
 // =======Component========= //
 class Component{
 public:
     //Constructor
-    Component(std::string name,Connection& l, Connection& r);
+    Component(std::string name, Connection& l, Connection& r);
     //Destructor
     virtual ~Component();
     //Functions
     virtual void update(double time) = 0;
-    virtual double getCurrent() = 0;
+    virtual double getCurrent() const = 0;
     virtual double getVoltage() const;
     std::string getId() const;
 private:
@@ -43,8 +46,8 @@ protected:
 class Battery : public Component{
 public:
     Battery(std::string name, double voltage, Connection& l, Connection& r);
-    //~Battery();
-    double getCurrent();
+
+    double getCurrent() const;
     void update(double time) override;
     double getVoltage() const override;
 protected:
@@ -57,8 +60,8 @@ protected:
 class Resistor : public Component{
 public:
     Resistor(std::string name, double resistance, Connection& l, Connection& r);
-    //~Battery();
-    double getCurrent();
+
+    double getCurrent() const;
     void update(double time) override;
 protected:
     double resistance;
@@ -69,10 +72,29 @@ protected:
 class Capacitor : public Component{
 public:
     Capacitor(std::string name, double capacitance, Connection& l, Connection& r);
-    //~Battery();
-    double getCurrent();
+
+    double getCurrent() const;
     void update(double time) override;
 protected:
     double capacitance;
     double charge;
+};
+
+class Circuit{
+public:
+    //Constructor
+    Circuit();
+    //Destructor
+    virtual ~Circuit();
+    //Functions
+    void addComponent(Component* comp);
+    void addConnection(std::string id);
+    Connection& getCon(std::string id);
+    void simulate(double iterations, double nmbPrints, double time);
+
+private:
+    void printHeader();
+    std::vector<Connection*> connections;
+    std::vector<Component*> components;
+
 };
