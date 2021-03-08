@@ -184,7 +184,7 @@ Battery::Battery(std::string name, double value, Connection& l, Connection& r)
     l = voltage;
 }
 //Functions
-void Battery::update(double time)
+void Battery::update(double)
 {
     left = voltage;
     right = 0;
