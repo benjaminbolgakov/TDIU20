@@ -7,6 +7,7 @@
 using namespace std;
 
 void data_control(int argc, char* argv[]);
+
 int main(int argc, char* argv[])
 {
     //Args:
@@ -55,9 +56,6 @@ int main(int argc, char* argv[])
     c3.addComponent(new Resistor("R4", 300.0, c3.getCon("l"), c3.getCon("n")));
     c3.addComponent(new Capacitor("C5", 0.75, c3.getCon("r"), c3.getCon("n")));
     c3.simulate(in_iterations,in_prints,in_interval);
-
-
-
 
     return 0;
 }

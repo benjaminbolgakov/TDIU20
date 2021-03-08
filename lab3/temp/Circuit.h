@@ -26,7 +26,7 @@ private:
 class Component{
 public:
     //Constructor
-    Component(std::string name, Connection& l, Connection& r);
+    Component(std::string name, double value, Connection& l, Connection& r);
     //Destructor
     virtual ~Component();
     //Functions
@@ -45,7 +45,7 @@ protected:
 // ========Battery========= //
 class Battery : public Component{
 public:
-    Battery(std::string name, double voltage, Connection& l, Connection& r);
+    Battery(std::string name, double value, Connection& l, Connection& r);
 
     double getCurrent() const;
     void update(double time) override;
@@ -59,7 +59,7 @@ protected:
 // ========Resistor========= //
 class Resistor : public Component{
 public:
-    Resistor(std::string name, double resistance, Connection& l, Connection& r);
+    Resistor(std::string name, double value, Connection& l, Connection& r);
 
     double getCurrent() const;
     void update(double time) override;
@@ -71,7 +71,7 @@ protected:
 // ========Capacitor========= //
 class Capacitor : public Component{
 public:
-    Capacitor(std::string name, double capacitance, Connection& l, Connection& r);
+    Capacitor(std::string name, double value, Connection& l, Connection& r);
 
     double getCurrent() const;
     void update(double time) override;
@@ -80,6 +80,7 @@ protected:
     double charge;
 };
 
+// ========Circuit========= //
 class Circuit{
 public:
     //Constructor
@@ -96,5 +97,16 @@ private:
     void printHeader();
     std::vector<Connection*> connections;
     std::vector<Component*> components;
+
+};
+
+class Circuit_Error : public std::logic_error
+{
+public:
+    Circuit_Error(std::string& message) throw();
+    //virtual const char* what() const throw();
+    using logic_error::logic_error;
+
+private:
 
 };

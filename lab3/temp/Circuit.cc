@@ -58,36 +58,57 @@ void Circuit::printHeader()
 }
 void Circuit::addComponent(Component* comp)
 {
-    for (Component* c : this->components)
-    {
-        if (c->getId() == comp->getId())
-    {
-        throw std::logic_error("Component with that name already exists");
+    try{
+        for (Component* c : this->components)
+        {
+            if (c->getId() == comp->getId())
+            {
+                throw Circuit_Error("Component with that name already exists");
+            }
+        }
+        this->components.push_back(comp);
     }
+    catch(Circuit_Error& e)
+    {
+        std::cout << e.what() << std::endl;
+        throw Circuit_Error("Something went wrong when adding a component");
     }
-    this->components.push_back(comp);
 }
 void Circuit::addConnection(std::string id)
 {
-    for (Connection* c : this->connections)
-    {
-        if ( c->getId() == id)
+    try{
+        for (Connection* c : this->connections)
         {
-            throw std::logic_error("Connection point with that name already exists");
+            if ( c->getId() == id)
+            {
+                throw Circuit_Error("Connection point with that name already exists");
+            }
         }
+        this->connections.push_back(new Connection(id));
     }
-    this->connections.push_back(new Connection(id));
+    catch(Circuit_Error& e)
+    {
+        std::cout << e.what() << std::endl;
+        throw Circuit_Error("Something went wrong when adding a connection");
+    }
 }
 Connection& Circuit::getCon(std::string id)
 {
-    for (Connection* c : this->connections)
-    {
-        if ( c->getId() == id)
+    try{
+        for (Connection* c : this->connections)
         {
-            return *c;
+            if ( c->getId() == id)
+            {
+                return *c;
+            }
         }
+        throw Circuit_Error("Connection doesn't exists");
     }
-    throw std::logic_error("Connection doesn't exists");
+    catch(Circuit_Error& e)
+    {
+        std::cout << e.what() << id << std::endl;
+        throw Circuit_Error("Something went wrong with getting a connection");
+    }
 }
 
 // =======Connection======== //
@@ -118,9 +139,20 @@ std::string Connection::getId() const
 
 // =======Component========= //
 //Constructors
-Component::Component(std::string name,Connection& l, Connection& r) : id{name}, left{l}, right{r}
+Component::Component(std::string name, double value,Connection& l, Connection& r)
+    : id{name}, left{l}, right{r}
 {
-
+    try{
+        if (value <= 0)
+        {
+            throw Circuit_Error("Components input value must be greater than 0");
+        }
+    }
+    catch(Circuit_Error& e)
+    {
+        std::cout << e.what() << std::endl;
+        throw Circuit_Error("Something went wrong when adding a component");
+    }
 }
 Component::~Component()
 {
@@ -146,7 +178,8 @@ std::string Component::getId() const
 
 // ========Battery========= //
 //Constructors
-Battery::Battery(std::string name, double voltage, Connection& l, Connection& r) : Component{name,l,r}, voltage{voltage}
+Battery::Battery(std::string name, double value, Connection& l, Connection& r)
+    : Component{name,value,l,r}, voltage{value}
 {
     l = voltage;
 }
@@ -168,8 +201,8 @@ double Battery::getVoltage() const
 
 // ========Resistor========= //
 //Constructor
-Resistor::Resistor(std::string name, double resistance, Connection& l, Connection& r) : Component{name,l,r},
-                                                                               resistance{resistance}
+Resistor::Resistor(std::string name, double value, Connection& l, Connection& r)
+    : Component{name,value,l,r}, resistance{value}
 {
 
 }
@@ -206,8 +239,8 @@ double Resistor::getCurrent() const
 
 // ========Capacitor========= //
 //Constructors
-Capacitor::Capacitor(std::string name, double capacitance, Connection& l, Connection& r) :
-    Component{name,l,r}, capacitance{capacitance}, charge{0}
+Capacitor::Capacitor(std::string name, double value, Connection& l, Connection& r) :
+    Component{name,value,l,r}, capacitance{value}, charge{0}
 {
 
 }
@@ -241,4 +274,11 @@ double Capacitor::getCurrent() const
     {
         return capacitance*((double(left)-double(right))-charge);
     }
+}
+
+
+// ========Circuit_Error========= //
+Circuit_Error::Circuit_Error(std::string& message) throw() : std::logic_error(message)
+{
+
 }
